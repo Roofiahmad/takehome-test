@@ -5,7 +5,7 @@ import Context from "../context/Context";
 
 const Posts = () => {
   const { userId } = useParams();
-  const { setLoading } = useContext(Context);
+  const { setLoading, user: storedUser } = useContext(Context);
   const [posts, setPosts] = useState([]);
   const [postTitle, setPostTitle] = useState("");
   const [postBody, setPostBody] = useState("");
@@ -125,7 +125,7 @@ const Posts = () => {
 
   return (
     <>
-      <div>Posts</div>
+      <div> {storedUser?.id == userId ? "My Posts" : "Posts"}</div>
       <div
         style={{ display: "flex", flexWrap: "wrap", gap: 20, marginTop: 20 }}
       >
@@ -149,43 +149,52 @@ const Posts = () => {
               <Link to={`/post-details/${p.id}`}>
                 <button>details</button>
               </Link>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-around",
-                  marginTop: 20,
-                }}
-              >
-                <button onClick={() => handleEdit(p)}>edit</button>
-                <button onClick={() => handleDelete(p)}>delete</button>
-              </div>
+
+              {storedUser?.id == p?.userId && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-around",
+                    marginTop: 20,
+                  }}
+                >
+                  <button onClick={() => handleEdit(p)}>edit</button>
+                  <button onClick={() => handleDelete(p)}>delete</button>
+                </div>
+              )}
             </div>
           ))}
       </div>
 
-      <form
-        style={{ display: "flex", flexDirection: "column", marginTop: "30px" }}
-        onSubmit={handleSubmit}
-      >
-        <label htmlFor="title">Post Title:</label>
-        <input
-          type="text"
-          id="title"
-          name="title"
-          value={postTitle}
-          onChange={(e) => setPostTitle(() => e.target.value)}
-        ></input>
-        <label htmlFor="body">Post Body:</label>
-        <textarea
-          id="body"
-          name="body"
-          rows="4"
-          cols="50"
-          value={postBody}
-          onChange={(e) => setPostBody(() => e.target.value)}
-        ></textarea>
-        <button type="submit">submit new post</button>
-      </form>
+      {storedUser?.id == userId && (
+        <form
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            marginTop: "30px",
+          }}
+          onSubmit={handleSubmit}
+        >
+          <label htmlFor="title">Post Title:</label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            value={postTitle}
+            onChange={(e) => setPostTitle(() => e.target.value)}
+          ></input>
+          <label htmlFor="body">Post Body:</label>
+          <textarea
+            id="body"
+            name="body"
+            rows="4"
+            cols="50"
+            value={postBody}
+            onChange={(e) => setPostBody(() => e.target.value)}
+          ></textarea>
+          <button type="submit">submit new post</button>
+        </form>
+      )}
     </>
   );
 };
