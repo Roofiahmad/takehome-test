@@ -14,9 +14,10 @@ const PostDetails = () => {
   const [comments, setComments] = useState([]);
   const [commentValue, setCommentValue] = useState("");
   // const [editId, setEditId] = useState(null);
-  const { user } = useContext(Context);
+  const { user, setLoading } = useContext(Context);
 
   const getPost = () => {
+    setLoading(true);
     axios
       .get(`https://jsonplaceholder.typicode.com/posts/${postId}`)
       .then((response) => {
@@ -26,10 +27,14 @@ const PostDetails = () => {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   const getComments = () => {
+    setLoading(true);
     axios
       .get(`https://jsonplaceholder.typicode.com/posts/${postId}/comments`)
       .then((response) => {
@@ -39,6 +44,9 @@ const PostDetails = () => {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -58,6 +66,7 @@ const PostDetails = () => {
 
     const url = `https://jsonplaceholder.typicode.com/posts/${postId}/comments`;
 
+    setLoading(true);
     axios
       .post(url, data, {
         headers: {
@@ -77,10 +86,14 @@ const PostDetails = () => {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   const deleteComment = (comment) => {
+    setLoading(true);
     axios
       .delete(`https://jsonplaceholder.typicode.com/comments/${comment.id}`)
       .then((response) => {
@@ -92,6 +105,9 @@ const PostDetails = () => {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 

@@ -1,12 +1,15 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import Context from "../context/Context";
 
 const AlbumDetails = () => {
   const { albumId } = useParams();
   const [photos, setPhotos] = useState([]);
+  const { setLoading } = useContext(Context);
 
   const getPhotos = () => {
+    setLoading(true);
     axios
       .get(`https://jsonplaceholder.typicode.com/albums/${albumId}/photos`)
       .then((response) => {
@@ -16,6 +19,9 @@ const AlbumDetails = () => {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 

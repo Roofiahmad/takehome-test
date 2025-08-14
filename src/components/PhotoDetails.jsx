@@ -1,13 +1,16 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
+import Context from "../context/Context";
 
 const PhotoDetails = () => {
   const { photoId } = useParams();
   const { picsumUrl } = useLocation().state;
   const [photo, setPhoto] = useState({});
+  const { setLoading } = useContext(Context);
 
   const getPhotoDetails = () => {
+    setLoading(true);
     axios
       .get(`https://jsonplaceholder.typicode.com/photos/${photoId}`)
       .then((response) => {
@@ -17,6 +20,9 @@ const PhotoDetails = () => {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 

@@ -5,9 +5,10 @@ import Context from "../context/Context";
 
 const Home = () => {
   const [users, setUsers] = useState([]);
-  const { setUser } = useContext(Context);
+  const { setUser, setLoading } = useContext(Context);
 
   const getUsers = () => {
+    setLoading(true);
     axios
       .get("https://jsonplaceholder.typicode.com/users")
       .then((response) => {
@@ -22,6 +23,9 @@ const Home = () => {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 

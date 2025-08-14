@@ -1,15 +1,18 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import Context from "../context/Context";
 
 const Posts = () => {
   const { userId } = useParams();
+  const { setLoading } = useContext(Context);
   const [posts, setPosts] = useState([]);
   const [postTitle, setPostTitle] = useState("");
   const [postBody, setPostBody] = useState("");
   const [selectedPost, setSelectedPost] = useState(null);
 
   const getPosts = () => {
+    setLoading(true);
     axios
       .get(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`)
       .then((response) => {
@@ -19,6 +22,9 @@ const Posts = () => {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -43,6 +49,7 @@ const Posts = () => {
       url = `https://jsonplaceholder.typicode.com/posts/${selectedPost?.id}`;
     }
 
+    setLoading(true);
     axiosMethod(url, data, {
       headers: {
         "Content-type": "application/json; charset=UTF-8",
@@ -63,10 +70,14 @@ const Posts = () => {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   const deletePost = (post) => {
+    setLoading(true);
     axios
       .delete(`https://jsonplaceholder.typicode.com/posts/${post?.id}`)
       .then((response) => {
@@ -83,6 +94,9 @@ const Posts = () => {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
