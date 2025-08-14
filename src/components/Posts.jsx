@@ -35,8 +35,12 @@ const Posts = () => {
             style={{
               width: 200,
               height: 200,
+              padding: 10,
               border: "1px solid grey",
               borderRadius: 5,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
             }}
           >
             <p>{p.title}</p>

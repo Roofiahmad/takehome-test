@@ -6,31 +6,25 @@ import Albums from "./components/Albums";
 import PostDetails from "./components/PostDetails";
 import AlbumDetails from "./components/AlbumDetails";
 import PhotoDetails from "./components/PhotoDetails";
+import ContextProvider from "./context/ContextProvider";
+import NavBar from "./components/NavBar";
 
-const App = () => (
-  <Router>
-    {/* <nav>
-      <ul>
-        <li>
-          <Link to="/">Home</Link>
-        </li>
-        <li>
-          <Link to="/about">About</Link>
-        </li>
-        <li>
-          <Link to="/contact">Contact</Link>
-        </li>
-      </ul>
-    </nav> */}
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/posts/:userId" element={<Posts />} />
-      <Route path="/albums/:userId" element={<Albums />} />
-      <Route path="/post-details/:postId" element={<PostDetails />} />
-      <Route path="/album-details/:albumId" element={<AlbumDetails />} />
-      <Route path="/photo-details/:photoId" element={<PhotoDetails />} />
-    </Routes>
-  </Router>
-);
+const App = () => {
+  return (
+    <ContextProvider>
+      <Router>
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/posts/:userId" element={<Posts />} />
+          <Route path="/albums/:userId" element={<Albums />} />
+          <Route path="/post-details/:postId" element={<PostDetails />} />
+          <Route path="/album-details/:albumId" element={<AlbumDetails />} />
+          <Route path="/photo-details/:photoId" element={<PhotoDetails />} />
+        </Routes>
+      </Router>
+    </ContextProvider>
+  );
+};
 
 export default App;

@@ -1,6 +1,7 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import Context from "../context/Context";
 
 const PostDetails = () => {
   const { postId } = useParams();
@@ -11,6 +12,9 @@ const PostDetails = () => {
     body: "",
   });
   const [comments, setComments] = useState([]);
+  const [commentValue, setCommentValue] = useState("");
+  // const [isEdit, setIsEdit] = useState(false);
+  const { user } = useContext(Context);
 
   const getPost = () => {
     axios
@@ -36,6 +40,57 @@ const PostDetails = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
+  };
+
+  const postComment = (value) => {
+    const data = {
+      postId: +postId,
+      userId: user.id,
+      name: user.name,
+      email: user.email,
+      body: value,
+    };
+
+    // const axiosMethod = isEdit ? axios.put : axios.post;
+
+    axios
+      .post(
+        `https://jsonplaceholder.typicode.com/posts/${postId}/comments`,
+        data,
+        {
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        }
+      )
+      .then((response) => {
+        if (response?.data) {
+          console.log(response.data, "response");
+          setComments((prevState) => [
+            ...prevState.filter((c) => c.id !== +response.data.id),
+            { ...response.data, postId: +response.data.postId },
+          ]);
+
+          setCommentValue(() => "");
+          // setIsEdit(() => false);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!commentValue) return alert("comment can't be empty");
+    if (!user?.id) return alert("cannot find user");
+    postComment(commentValue);
+  };
+
+  const handleEdit = (c) => {
+    console.log(c);
+    // setIsEdit(() => true);
+    setCommentValue(() => c.body);
   };
 
   useEffect(() => {
@@ -72,8 +127,35 @@ const PostDetails = () => {
               {c.name} / {c.email}
             </b>
             <p>{c.body}</p>
+            {c.email == user.email && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: 10,
+                }}
+              >
+                <button>delete</button>
+                <button onClick={() => handleEdit(c)}>edit</button>
+              </div>
+            )}
           </div>
         ))}
+        <form
+          style={{ display: "flex", flexDirection: "column" }}
+          onSubmit={handleSubmit}
+        >
+          <label htmlFor="message">Your Comment:</label>
+          <textarea
+            id="comment"
+            name="comment"
+            rows="4"
+            cols="50"
+            value={commentValue}
+            onChange={(e) => setCommentValue(() => e.target.value)}
+          ></textarea>
+          <button type="submit">submit comment</button>
+        </form>
       </div>
     </div>
   );

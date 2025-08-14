@@ -1,9 +1,11 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Context from "../context/Context";
 
 const Home = () => {
   const [users, setUsers] = useState([]);
+  const { setUser } = useContext(Context);
 
   const getUsers = () => {
     axios
@@ -12,6 +14,9 @@ const Home = () => {
         console.log(response.data);
         if (response?.data?.length) {
           setUsers(() => response.data);
+
+          // set logged user, assume user on first index
+          setUser(() => response.data[0]);
         }
       })
       .catch((error) => {
@@ -25,7 +30,7 @@ const Home = () => {
 
   return (
     <>
-      <div>Home</div>
+      <div>Users</div>
       <div
         style={{ display: "flex", flexWrap: "wrap", gap: 20, marginTop: 20 }}
       >
@@ -35,8 +40,12 @@ const Home = () => {
             style={{
               width: 200,
               height: 200,
+              padding: 10,
               border: "1px solid grey",
               borderRadius: 5,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
             }}
           >
             <p>{u.name}</p>
@@ -44,7 +53,7 @@ const Home = () => {
               <Link to={`/posts/${u.id}`}>
                 <button>posts</button>
               </Link>
-              <Link to={`/albums/${u.id}`}>
+              <Link to={`/albums/${u.id}`} style={{ marginLeft: 8 }}>
                 <button>album</button>
               </Link>
             </div>
