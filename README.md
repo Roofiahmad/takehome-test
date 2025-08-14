@@ -1,12 +1,8 @@
-# React + Vite
+# Takehome test (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Assumption on building this app:
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- User is the first element of userlist get from API https://jsonplaceholder.typicode.com/users
+- image url from jsonplaceholder api is broken, so I am using external API https://picsum.photos
+- json placeholder doesn't provide API to update comment both using PUT or PATCH, so I am using the same API as create new comment (using POST)
+- json placeholder doesn't provide API to update newly created post, the API will return status code 500. but it work with the default data.
