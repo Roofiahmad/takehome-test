@@ -6,11 +6,6 @@ const AlbumDetails = () => {
   const { albumId } = useParams();
   const [photos, setPhotos] = useState([]);
 
-  console.log(albumId);
-  console.log(photos);
-
-  //
-
   const getPhotos = () => {
     axios
       .get(`https://jsonplaceholder.typicode.com/albums/${albumId}/photos`)

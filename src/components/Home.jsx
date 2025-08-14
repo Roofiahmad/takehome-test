@@ -11,12 +11,13 @@ const Home = () => {
     axios
       .get("https://jsonplaceholder.typicode.com/users")
       .then((response) => {
-        console.log(response.data);
         if (response?.data?.length) {
           setUsers(() => response.data);
 
           // set logged user, assume user on first index
-          setUser(() => response.data[0]);
+          let user = response.data[0];
+          setUser(() => user);
+          sessionStorage.setItem("user", JSON.stringify(user));
         }
       })
       .catch((error) => {

@@ -13,7 +13,7 @@ const PostDetails = () => {
   });
   const [comments, setComments] = useState([]);
   const [commentValue, setCommentValue] = useState("");
-  // const [isEdit, setIsEdit] = useState(false);
+  // const [editId, setEditId] = useState(null);
   const { user } = useContext(Context);
 
   const getPost = () => {
@@ -51,28 +51,43 @@ const PostDetails = () => {
       body: value,
     };
 
-    // const axiosMethod = isEdit ? axios.put : axios.post;
+    // const axiosMethod = editId ? axios.put : axios.post;
+    // const url = editId
+    //   ? `https://jsonplaceholder.typicode.com/comments/${editId}`
+    //   : `https://jsonplaceholder.typicode.com/posts/${postId}/comments`;
+
+    const url = `https://jsonplaceholder.typicode.com/posts/${postId}/comments`;
 
     axios
-      .post(
-        `https://jsonplaceholder.typicode.com/posts/${postId}/comments`,
-        data,
-        {
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-          },
-        }
-      )
+      .post(url, data, {
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      })
       .then((response) => {
         if (response?.data) {
-          console.log(response.data, "response");
           setComments((prevState) => [
             ...prevState.filter((c) => c.id !== +response.data.id),
             { ...response.data, postId: +response.data.postId },
           ]);
 
           setCommentValue(() => "");
-          // setIsEdit(() => false);
+          // setEditId(() => null);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
+
+  const deleteComment = (comment) => {
+    axios
+      .delete(`https://jsonplaceholder.typicode.com/comments/${comment.id}`)
+      .then((response) => {
+        if (response?.data) {
+          setComments((prevState) => [
+            ...prevState.filter((c) => c.id !== comment.id),
+          ]);
         }
       })
       .catch((error) => {
@@ -88,9 +103,12 @@ const PostDetails = () => {
   };
 
   const handleEdit = (c) => {
-    console.log(c);
-    // setIsEdit(() => true);
+    // setEditId(() => c.id);
     setCommentValue(() => c.body);
+  };
+
+  const handleDelete = (c) => {
+    deleteComment(c);
   };
 
   useEffect(() => {
@@ -135,7 +153,7 @@ const PostDetails = () => {
                   gap: 10,
                 }}
               >
-                <button>delete</button>
+                <button onClick={() => handleDelete(c)}>delete</button>
                 <button onClick={() => handleEdit(c)}>edit</button>
               </div>
             )}

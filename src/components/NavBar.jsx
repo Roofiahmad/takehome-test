@@ -4,7 +4,6 @@ import Context from "../context/Context";
 
 const NavBar = () => {
   const { user } = useContext(Context);
-  console.log(user);
   return (
     <div style={{ display: "flex", width: "auto", padding: "2rem" }}>
       {/* <nav>
