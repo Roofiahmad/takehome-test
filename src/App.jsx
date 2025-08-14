@@ -1,12 +1,15 @@
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import Home from "./components/Home";
-import About from "./components/About";
-import Contact from "./components/Contact";
 import "./App.css";
+import Posts from "./components/Posts";
+import Albums from "./components/Albums";
+import PostDetails from "./components/PostDetails";
+import AlbumDetails from "./components/AlbumDetails";
+import PhotoDetails from "./components/PhotoDetails";
 
 const App = () => (
   <Router>
-    <nav>
+    {/* <nav>
       <ul>
         <li>
           <Link to="/">Home</Link>
@@ -18,11 +21,14 @@ const App = () => (
           <Link to="/contact">Contact</Link>
         </li>
       </ul>
-    </nav>
+    </nav> */}
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/about/:id" element={<About />} />
-      <Route path="/contact" element={<Contact />} />
+      <Route path="/posts/:userId" element={<Posts />} />
+      <Route path="/albums/:userId" element={<Albums />} />
+      <Route path="/post-details/:postId" element={<PostDetails />} />
+      <Route path="/album-details/:albumId" element={<AlbumDetails />} />
+      <Route path="/photo-details/:photoId" element={<PhotoDetails />} />
     </Routes>
   </Router>
 );
