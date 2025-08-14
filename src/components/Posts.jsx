@@ -88,6 +88,9 @@ const Posts = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!postTitle.trim()) return alert("title can't be empty");
+    if (!postBody.trim()) return alert("body can't be empty");
+    if (!userId) return alert("userId can't be empty");
     createPost();
   };
 

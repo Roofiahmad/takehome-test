@@ -97,7 +97,7 @@ const PostDetails = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!commentValue) return alert("comment can't be empty");
+    if (!commentValue.trim()) return alert("comment can't be empty");
     if (!user?.id) return alert("cannot find user");
     postComment(commentValue);
   };
