@@ -1,9 +1,11 @@
 import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import Context from "../context/Context";
 
 const NavBar = () => {
   const { user } = useContext(Context);
+  console.log("render navbar");
+
   return (
     <div style={{ display: "flex", width: "auto", padding: "2rem" }}>
       {/* <nav>

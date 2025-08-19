@@ -1,8 +1,4 @@
-import React, { useContext } from "react";
-import Context from "../context/Context";
-
-const Spinner = () => {
-  const { loading } = useContext(Context);
+const Spinner = ({ loading }) => {
   return (
     <>
       {loading && (

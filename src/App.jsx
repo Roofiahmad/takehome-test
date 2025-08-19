@@ -8,12 +8,14 @@ import AlbumDetails from "./components/AlbumDetails";
 import PhotoDetails from "./components/PhotoDetails";
 import ContextProvider from "./context/ContextProvider";
 import NavBar from "./components/NavBar";
-import Spinner from "./components/Spinner";
+// import Spinner from "./components/Spinner";
 
 const App = () => {
+  console.log("render app");
+
   return (
     <ContextProvider>
-      <Spinner />
+      {/* <Spinner /> */}
       <Router>
         <NavBar />
         <Routes>
