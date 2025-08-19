@@ -2,110 +2,95 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Context from "../context/Context";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import Spinner from "./Spinner";
 
 const Posts = () => {
   const { userId } = useParams();
-  const { setLoading, user: storedUser } = useContext(Context);
+  // const queryClient = useQueryClient();
+  const { user: storedUser } = useContext(Context);
   const [posts, setPosts] = useState([]);
   const [postTitle, setPostTitle] = useState("");
   const [postBody, setPostBody] = useState("");
   const [selectedPost, setSelectedPost] = useState(null);
 
-  const getPosts = () => {
-    setLoading(true);
-    axios
-      .get(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`)
-      .then((response) => {
-        if (response?.data?.length) {
-          setPosts(() => response.data);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+  const resetState = () => {
+    setPostBody(() => "");
+    setPostTitle(() => "");
+    setSelectedPost(() => null);
   };
 
-  const createPost = () => {
-    let data = {
-      title: postTitle,
-      body: postBody,
-      userId: +userId,
-    };
+  const { data: fetchedPosts, isPostsLoading } = useQuery({
+    queryKey: ["posts", userId],
+    queryFn: async () => {
+      const response = await axios.get(
+        `https://jsonplaceholder.typicode.com/posts?userId=${userId}`
+      );
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes,
+    throwOnError: true,
+  });
 
-    let axiosMethod = axios.post;
-    let url = `https://jsonplaceholder.typicode.com/posts`;
-
-    if (selectedPost?.id) {
-      // selectedPost will filled on edit mode
-      data = {
-        ...data,
-        id: selectedPost?.id,
-      };
-
-      axiosMethod = axios.put;
-      url = `https://jsonplaceholder.typicode.com/posts/${selectedPost?.id}`;
-    }
-
-    setLoading(true);
-    axiosMethod(url, data, {
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
+  const { mutate: performDeletePost, isLoading: isDeleteLoading } = useMutation(
+    {
+      mutationFn: (postId) =>
+        axios.delete(`https://jsonplaceholder.typicode.com/posts/${postId}`),
+      onSuccess: (data, postId) => {
+        // queryClient.invalidateQueries({ queryKey: ["posts", userId] });
+        setPosts((prevState) => [...prevState.filter((p) => p.id !== postId)]);
+        resetState();
       },
-    })
-      .then((response) => {
-        if (response?.data) {
-          setPosts((prevState) => [
-            ...prevState.filter((p) => p.id !== response.data.id),
-            { ...response.data, userId: +response.data.userId },
-          ]);
+      onError: (error) => {
+        console.error("Error deleting post:", error);
+      },
+    }
+  );
 
-          // reset state
-          setPostBody(() => "");
-          setPostTitle(() => "");
-          setSelectedPost(() => null);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  const { mutate: performUpdateOrCreatePost, isLoadingUpdatePost } =
+    useMutation({
+      mutationFn: async (postData) => {
+        let axiosMethod = postData.id ? axios.put : axios.post;
+        let url = `https://jsonplaceholder.typicode.com/posts/${
+          postData.id || ""
+        }`;
 
-  const deletePost = (post) => {
-    setLoading(true);
-    axios
-      .delete(`https://jsonplaceholder.typicode.com/posts/${post?.id}`)
-      .then((response) => {
-        if (response?.data) {
-          setPosts((prevState) => [
-            ...prevState.filter((p) => p.id !== post.id),
-          ]);
+        // We can rely on axios to set the headers correctly for JSON
+        const { data } = await axiosMethod(url, postData);
+        return data;
+      },
+      onSuccess: (newPostData) => {
+        // queryClient.invalidateQueries({ queryKey: ['posts'] });
+        setPosts((prevState) => [
+          ...prevState.filter((p) => p.id !== newPostData.id),
+          { ...newPostData, userId: +newPostData.userId },
+        ]);
+        resetState();
+      },
+      onError: (error) => {
+        console.error("Error creating/updating post:", error);
+      },
+    });
 
-          // reset state
-          setPostBody(() => "");
-          setPostTitle(() => "");
-          setSelectedPost(() => null);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  const deletePost = (post) => performDeletePost(post?.id);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!postTitle.trim()) return alert("title can't be empty");
     if (!postBody.trim()) return alert("body can't be empty");
     if (!userId) return alert("userId can't be empty");
-    createPost();
+
+    let data = {
+      title: postTitle,
+      body: postBody,
+      userId: +userId,
+    };
+
+    if (selectedPost?.id) {
+      // If we are in edit mode, add the ID
+      data.id = selectedPost.id;
+    }
+    performUpdateOrCreatePost(data);
   };
 
   const handleEdit = (p) => {
@@ -120,11 +105,16 @@ const Posts = () => {
   };
 
   useEffect(() => {
-    if (userId) getPosts();
-  }, [userId]);
+    if (fetchedPosts && fetchedPosts.length) {
+      setPosts(() => fetchedPosts);
+    }
+  }, [fetchedPosts]);
 
   return (
     <>
+      <Spinner
+        loading={isPostsLoading || isDeleteLoading || isLoadingUpdatePost}
+      />
       <div> {storedUser?.id == userId ? "My Posts" : "Posts"}</div>
       <div
         style={{ display: "flex", flexWrap: "wrap", gap: 20, marginTop: 20 }}
